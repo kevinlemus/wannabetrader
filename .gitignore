@@ -1,0 +1,22 @@
+# Build output
+backend/target/
+
+# Log files (written while the app runs)
+backend/logs/
+
+# Secrets - never commit API keys, passwords, certificates or tokens
+*.env
+backend/src/main/resources/application-local.properties
+backend/src/main/resources/ssl/
+
+# Editor / OS
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/

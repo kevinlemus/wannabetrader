@@ -1,0 +1,4 @@
+# Keep line endings the same on every computer (Windows, Mac, Linux)
+* text=auto eol=lf
+*.bat text eol=crlf
+*.p12 binary

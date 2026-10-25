@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Logging settings (Logback - Spring Boot's built-in logger).
+
+  Every log line goes to TWO places:
+    1. the console (the terminal window), like before
+    2. the file backend/logs/wannabetrader.log  - so you can read it later
+
+  The file "rolls": a new file each day (or every 10 MB). Old files are kept for
+  30 days, and never more than 500 MB in total - then the oldest are deleted.
+-->
+<configuration>
+
+    <!-- Spring Boot's ready-made log formats and console output -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+    <!-- Output 2: the log file -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/wannabetrader.log</file>
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/wannabetrader.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>500MB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- Our own code: show INFO and above (INFO, WARN, ERROR). Change to DEBUG to see more. -->
+    <logger name="com.wannabetrader" level="INFO"/>
+
+    <!-- Everything else (Spring, Hibernate...): INFO and above, to both outputs -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+</configuration>

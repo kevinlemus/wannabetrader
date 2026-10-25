@@ -1,0 +1,12 @@
+# TEMPLATE - copy this file to "application-local.properties" (same folder) and fill it in.
+# The real file is git-ignored. Never commit real keys or passwords.
+
+# Your Schwab developer app (developer.schwab.com -> Dashboard -> your app)
+schwab.app-key=PASTE_APP_KEY_HERE
+schwab.app-secret=PASTE_APP_SECRET_HERE
+
+# Password for the HTTPS certificate (ssl/keystore.p12)
+server.ssl.key-store-password=PASTE_CERTIFICATE_PASSWORD_HERE
+
+# Password for the PostgreSQL user "wannabetrader"
+spring.datasource.password=PASTE_DATABASE_PASSWORD_HERE
