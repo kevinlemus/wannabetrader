@@ -9,17 +9,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
- * Everything about your Schwab accounts: list them, select one, and set your default.
+ * Everything about your Schwab accounts: list them, select one, set your default,
+ * and see what an account holds right now.
  *
  * Accounts are picked by their LAST 4 DIGITS (e.g. "5678") - the same digits
  * thinkorswim shows in its account dropdown.
  *
  *   Select      = "show me this account" (nothing saved - like flipping the dropdown)
- *   Set default = "always open on this account" (saved to a file, survives restarts)
+ *   Set default = "always open on this account" (saved in the database, survives restarts)
  */
 @Service
 public class AccountService {
@@ -80,6 +83,17 @@ public class AccountService {
         settingsDao.save(new UserSettings(last4));
         log.info("Default account set to {}", account.maskedNumber());
         return account;
+    }
+
+    /**
+     * What an account holds right now, straight from Schwab: symbol -> shares
+     * (positive = long, negative = short). Stocks you don't hold aren't in the map.
+     *
+     * @param last4 e.g. "5678"
+     */
+    public Map<String, BigDecimal> getPositions(String last4) {
+        SchwabAccount account = selectAccount(last4);
+        return accountDao.findPositions(authService.accessToken(), account);
     }
 
     /** @return the last 4 digits of your default account, or empty if you haven't picked one */

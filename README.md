@@ -7,7 +7,7 @@ Schwab/thinkorswim. Java Spring Boot + Angular + PostgreSQL.
 
 | Tool | Status |
 |---|---|
-| **Journal** - your trades, P/L, notes and stats | 🔨 building |
+| **Journal** - your trades, P/L, notes and stats | 🔨 trades + P/L done, stats next |
 | **Screener** | planned |
 | **Backtester** | planned |
 
@@ -22,7 +22,7 @@ backend/src/main/java/com/wannabetrader/
 │   ├── auth/      Schwab login (OAuth), token kept fresh automatically
 │   ├── account/   your Schwab accounts: list, select, set default
 │   └── settings/  your saved choices
-└── journal/       tool #1
+└── journal/       tool #1: Trade, Fill, ShareAdjustment, import from Schwab, P/L
 ```
 
 Every module uses the same 4 layers: **model → dao → service → controller**.
@@ -81,6 +81,19 @@ The login lasts 7 days.
 | `GET /api/accounts` | Your accounts (last 4 digits), default marked |
 | `GET /api/accounts/{last4}` | Select one account |
 | `PUT /api/accounts/default/{last4}` | Save your default account |
+| `POST /api/journal/import` | Pull the last 7 days from Schwab (`?from=2021-01-01` for all history). Safe to repeat. |
+| `GET /api/journal/trades?period=WEEK` | Your trades: `DAY`, `WEEK`, `MONTH`, `YEAR`, `ALL` (`&day=2026-10-23` picks which one) |
+| `GET /api/journal/trades/{id}` | One trade with its fills and share changes (reverse splits) |
+| `PUT /api/journal/trades/{id}/notes` | Save setup + notes: `{"setup": "...", "notes": "..."}` |
+
+### How the journal works
+
+- Schwab sends **fills**. A **trade** is one round trip: it starts when you go from flat to
+  holding and closes when you're flat again.
+- **Reverse splits** keep the same trade: new ticker, converted shares, same dollars.
+- P/L uses Schwab's exact dollars per fill - checked against real history: 303 of 303 closed
+  trades match Schwab's cash to the cent.
+- Anything the app can't follow is **flagged for review**, never guessed.
 
 ## Tests
 

@@ -16,12 +16,16 @@ public record SchwabAccount(
         String hashValue
 ) {
 
-    /** The account number with only the last 4 digits showing, e.g. "****5678". */
-    public String maskedNumber() {
-        String last4 = accountNumber == null || accountNumber.length() < 4
+    /** Just the last 4 digits, e.g. "5678". This is how the app names accounts everywhere. */
+    public String last4() {
+        return accountNumber == null || accountNumber.length() < 4
                 ? "????"
                 : accountNumber.substring(accountNumber.length() - 4);
-        return "****" + last4;
+    }
+
+    /** The account number with only the last 4 digits showing, e.g. "****5678". */
+    public String maskedNumber() {
+        return "****" + last4();
     }
 
     /** Shows only the last 4 digits and hides the hash, so logs never hold the full number. */
