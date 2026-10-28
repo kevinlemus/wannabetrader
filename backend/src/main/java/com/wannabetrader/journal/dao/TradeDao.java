@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -77,6 +78,23 @@ public class TradeDao {
                         where f.trade.id = :tradeId
                         order by f.executedAt, f.activityId""", Fill.class)
                 .setParameter("tradeId", tradeId)
+                .getResultList();
+    }
+
+    /**
+     * The fills of many trades at once, oldest first - one trip to the database instead of
+     * one per trade. Used by the stats.
+     */
+    @Transactional(readOnly = true)
+    public List<Fill> findFillsOfTrades(Collection<Long> tradeIds) {
+        if (tradeIds.isEmpty()) {
+            return List.of();
+        }
+        return db.createQuery("""
+                        select f from Fill f
+                        where f.trade.id in :tradeIds
+                        order by f.executedAt, f.activityId""", Fill.class)
+                .setParameter("tradeIds", tradeIds)
                 .getResultList();
     }
 

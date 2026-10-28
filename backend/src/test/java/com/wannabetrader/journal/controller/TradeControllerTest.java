@@ -36,6 +36,7 @@ class TradeControllerTest {
         Trade trade = new Trade(1L, "6943", "YMAT", Trade.Side.LONG, Instant.parse("2026-10-23T14:30:00Z"));
         trade.setStatus(Trade.Status.CLOSED);
         trade.setPnl(new BigDecimal("9.99"));
+        trade.setClosedAt(Instant.parse("2026-10-23T14:35:00Z"));
         trade.setSetup("gap and go");
         return trade;
     }
@@ -77,6 +78,7 @@ class TradeControllerTest {
                 .andExpect(jsonPath("$[0].status").value("CLOSED"))
                 .andExpect(jsonPath("$[0].pnl").value(9.99))
                 .andExpect(jsonPath("$[0].setup").value("gap and go"))
+                .andExpect(jsonPath("$[0].holdSeconds").value(300))                // 14:30 -> 14:35
                 .andExpect(jsonPath("$[0].userId").doesNotExist());     // internal fields stay inside
     }
 

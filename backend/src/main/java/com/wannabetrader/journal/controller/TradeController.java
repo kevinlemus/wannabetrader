@@ -101,15 +101,20 @@ public class TradeController {
 
     // ---- The shapes the browser gets. Only this controller uses them, so they live here. ----
 
-    /** One row of your journal. */
+    /**
+     * One row of your journal.
+     * holdSeconds = how long you were in the trade, in seconds (null while it's open).
+     * Seconds, because every screen can show that the way it likes ("4m 30s", "2h 05m").
+     */
     record TradeView(Long id, String account, String symbol, Trade.Side side, Trade.Status status,
-                     Instant openedAt, Instant closedAt, BigDecimal quantity, BigDecimal openQuantity,
+                     Instant openedAt, Instant closedAt, Long holdSeconds, BigDecimal quantity, BigDecimal openQuantity,
                      BigDecimal avgEntryPrice, BigDecimal avgExitPrice, BigDecimal fees, BigDecimal pnl,
                      String setup, String notes, boolean needsReview, String reviewReason) {
 
         static TradeView of(Trade t) {
+            Long holdSeconds = t.getHoldTime() == null ? null : t.getHoldTime().toSeconds();
             return new TradeView(t.getId(), t.getAccount(), t.getSymbol(), t.getSide(), t.getStatus(),
-                    t.getOpenedAt(), t.getClosedAt(), t.getQuantity(), t.getOpenQuantity(),
+                    t.getOpenedAt(), t.getClosedAt(), holdSeconds, t.getQuantity(), t.getOpenQuantity(),
                     t.getAvgEntryPrice(), t.getAvgExitPrice(), t.getFees(), t.getPnl(),
                     t.getSetup(), t.getNotes(), t.isNeedsReview(), t.getReviewReason());
         }

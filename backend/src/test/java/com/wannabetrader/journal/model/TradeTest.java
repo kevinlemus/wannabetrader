@@ -21,6 +21,16 @@ class TradeTest {
     TestEntityManager db;
 
     @Test
+    void holdTimeIsFromFirstFillToFlatAndEmptyWhileOpen() {
+        Trade trade = new Trade(1L, "6943", "YMAT", Trade.Side.LONG, Instant.parse("2026-10-23T14:30:00Z"));
+        assertNull(trade.getHoldTime(), "still open - no hold time yet");
+
+        trade.setClosedAt(Instant.parse("2026-10-23T14:34:30Z"));
+
+        assertEquals(java.time.Duration.ofSeconds(270), trade.getHoldTime());     // 4m 30s
+    }
+
+    @Test
     void newTradeStartsOpenWithZeroPnl() {
         Trade trade = new Trade(1L, "6943", "YMAT", Trade.Side.LONG, Instant.parse("2026-10-23T14:30:00Z"));
 

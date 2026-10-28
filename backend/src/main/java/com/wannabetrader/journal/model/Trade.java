@@ -11,6 +11,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.Instant;
 
 /**
@@ -148,6 +149,17 @@ public class Trade {
     public String getNotes() { return notes; }
     public boolean isNeedsReview() { return needsReview; }
     public String getReviewReason() { return reviewReason; }
+
+    /**
+     * How long you were in the trade: from the first fill to the fill that made you flat.
+     * null while the trade is still open.
+     *
+     * Not saved in the database - it's worked out from openedAt and closedAt, so it can
+     * never disagree with them.
+     */
+    public Duration getHoldTime() {
+        return closedAt == null ? null : Duration.between(openedAt, closedAt);
+    }
 
     // ---- Setters: change a value (the service fills these in as fills come in) ----
 
